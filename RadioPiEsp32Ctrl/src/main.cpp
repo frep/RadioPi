@@ -4,7 +4,9 @@
 #include <MqttCredentials.h>
 
 #include <ESPAsyncWebServer.h>
-#include <ESPAsyncWiFiManager.h>         //https://github.com/tzapu/WiFiManager
+#include <ESPAsyncWiFiManager.h>      // https://github.com/tzapu/WiFiManager
+
+#include <SimpleRotary.h>
 
 #include <Debug.h>
 
@@ -15,6 +17,9 @@ TimerHandle_t wifiReconnectTimer;
 // WifiManager
 AsyncWebServer server(80);
 DNSServer dns;
+// Rotary Encoder
+SimpleRotary rotary(21,17,16);  // Channel A, Channel B, Switch
+
 
 void connectToWifi() 
 {
@@ -60,14 +65,14 @@ void onMqttConnect(bool sessionPresent)
   uint16_t packetIdSub = mqttClient.subscribe("test/lol", 2);
   DEBUG_T("Subscribing at QoS 2, packetId: ");
   DEBUG_P(packetIdSub);
-  mqttClient.publish("test/lol", 0, true, "test 1");
-  DEBUG_P("Publishing at QoS 0");
-  uint16_t packetIdPub1 = mqttClient.publish("test/lol", 1, true, "test 2");
-  DEBUG_T("Publishing at QoS 1, packetId: ");
-  DEBUG_P(packetIdPub1);
-  uint16_t packetIdPub2 = mqttClient.publish("test/lol", 2, true, "test 3");
-  DEBUG_T("Publishing at QoS 2, packetId: ");
-  DEBUG_P(packetIdPub2);
+  // mqttClient.publish("test/lol", 0, true, "test 1");
+  // DEBUG_P("Publishing at QoS 0");
+  // uint16_t packetIdPub1 = mqttClient.publish("test/lol", 1, true, "test 2");
+  // DEBUG_T("Publishing at QoS 1, packetId: ");
+  // DEBUG_P(packetIdPub1);
+  // uint16_t packetIdPub2 = mqttClient.publish("test/lol", 2, true, "test 3");
+  // DEBUG_T("Publishing at QoS 2, packetId: ");
+  // DEBUG_P(packetIdPub2);
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) 
@@ -144,6 +149,46 @@ void setup()
   connectToWifi();
 }
 
+void checkRotaryEncoder()
+{
+  // check for rotation
+  switch(rotary.rotate())
+  {
+    case 1:
+    // clockwise rotation detected
+    DEBUG_P("CW");
+    mqttClient.publish("rotaryEncoder", 0, true, "CW");
+    break;
+    case 2:
+    // counter-clockwise rotation detected
+    DEBUG_P("CCW");
+    mqttClient.publish("rotaryEncoder", 0, true, "CCW");
+    break;
+    default:
+    // no rotation detected
+    break;
+  }
+  // check for button presses
+  switch(rotary.pushType(1000)) // number of milliseconds button has to be pushed for it to be considered a long push.
+  {
+    case 1:
+    // normal button press detected
+    DEBUG_P("Pushed");
+    mqttClient.publish("rotaryEncoder", 0, true, "Pushed");
+    break;
+    case 2:
+    // long button press detected
+    DEBUG_P("Long Pushed");
+    mqttClient.publish("rotaryEncoder", 0, true, "LongPushed");
+    break;
+    default:
+    // no button press detected
+    break;
+  }
+}
+
+
 void loop() 
 {
+  checkRotaryEncoder();
 }
