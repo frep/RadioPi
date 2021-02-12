@@ -1,7 +1,7 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#define DEBUGGING                     // Einkommentieren für die Serielle Ausgabe
+#define DEBUGGING
 
 #ifdef DEBUGGING
 #define DEBUG_B(...) Serial.begin(__VA_ARGS__)
