@@ -3,5 +3,6 @@
         "*.tcc": "cpp",
         "bitset": "cpp",
         "functional": "cpp"
-    }
+    },
+    "python.pythonPath": "/Users/frehnerp/anaconda/bin/python"
 }
