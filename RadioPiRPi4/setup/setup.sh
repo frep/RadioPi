@@ -24,6 +24,15 @@ function updateSystem {
     sudo apt-get -y autoremove
 }
 
+function setKeyboardlayout {
+  	sudo dpkg-reconfigure keyboard-configuration
+}
+
+function setTimezone {
+	sudo apt-get install --reinstall tzdata
+  	sudo dpkg-reconfigure tzdata
+}
+
 function finderScreenSharing {
 	sudo apt-get install netatalk -y
 	sudo cp -f ${setupdir}/vnc/rfb.service /etc/avahi/services/
@@ -41,6 +50,8 @@ function installMqttBroker {
 ###################################################################################
 
 #updateSystem
+#setKeyboardlayout
+#setTimezone
 #finderScreenSharing
 #installMqttBroker
 
