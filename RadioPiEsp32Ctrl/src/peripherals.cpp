@@ -15,25 +15,25 @@ extern Adafruit_NeoPixel pixels;
 void buttonPressed()
 {
     DEBUG_P("Pressed");
-    mqttClient.publish("rotaryEncoder", 0, true, "Pressed");
+    mqttClient.publish("volumio", 0, true, "buttonPressed");
 }
 
 void buttonReleased()
 {
     DEBUG_P("Released");
-    mqttClient.publish("rotaryEncoder", 0, true, "Released");
+    //mqttClient.publish("volumio", 0, true, "buttonReleased");
 }
 
 void turnClockwise()
 {
     DEBUG_P("CW");
-    mqttClient.publish("rotaryEncoder", 0, true, "CW");
+    mqttClient.publish("volumio", 0, true, "turnCW");
 }
 
 void turnCounterclockwise()
 {
     DEBUG_P("CCW");
-    mqttClient.publish("rotaryEncoder", 0, true, "CCW");
+    mqttClient.publish("volumio", 0, true, "turnCCW");
 }
 
 

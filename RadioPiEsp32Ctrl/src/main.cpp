@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <AsyncMqttClient.h>
-#include <MqttCredentials.h>
 #include <wireless.h>
 #include <ESPAsyncWebServer.h>
 #include <ESPAsyncWiFiManager.h>      // https://github.com/tzapu/WiFiManager
@@ -19,7 +18,6 @@ DNSServer dns;
 AsyncWiFiManager wifiManager(&server,&dns);
 
 // Rotary Encoder
-
 SwitchEncoder encoder = SwitchEncoder(Channel_A, Channel_B, Switch);
 
 
@@ -42,7 +40,6 @@ void setup()
   mqttClient.onUnsubscribe(onMqttUnsubscribe);
   mqttClient.onMessage(onMqttMessage);
   mqttClient.onPublish(onMqttPublish);
-  mqttClient.setServer(MQTT_HOST, MQTT_PORT);
 
   pixels.begin();
 

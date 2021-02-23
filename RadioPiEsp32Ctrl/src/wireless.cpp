@@ -4,6 +4,7 @@
 #include <ESPAsyncWiFiManager.h> 
 #include <wireless.h>
 #include <Debug.h>
+#include <MqttCredentials.h>
 
 extern AsyncWiFiManager wifiManager;
 extern AsyncMqttClient mqttClient;
@@ -19,6 +20,7 @@ void connectToWifi()
 void connectToMqtt() 
 {
   DEBUG_P("Connecting to MQTT...");
+  mqttClient.setServer(MQTT_HOST, MQTT_PORT);
   mqttClient.connect();
 }
 
@@ -49,17 +51,6 @@ void onMqttConnect(bool sessionPresent)
   DEBUG_P("Connected to MQTT.");
   DEBUG_T("Session present: ");
   DEBUG_P(sessionPresent);
-  // uint16_t packetIdSub = mqttClient.subscribe("test/lol", 2);
-  // DEBUG_T("Subscribing at QoS 2, packetId: ");
-  // DEBUG_P(packetIdSub);
-  // mqttClient.publish("test/lol", 0, true, "test 1");
-  // DEBUG_P("Publishing at QoS 0");
-  // uint16_t packetIdPub1 = mqttClient.publish("test/lol", 1, true, "test 2");
-  // DEBUG_T("Publishing at QoS 1, packetId: ");
-  // DEBUG_P(packetIdPub1);
-  // uint16_t packetIdPub2 = mqttClient.publish("test/lol", 2, true, "test 3");
-  // DEBUG_T("Publishing at QoS 2, packetId: ");
-  // DEBUG_P(packetIdPub2);
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) 
