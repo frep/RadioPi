@@ -5,7 +5,6 @@
 #include <ESPAsyncWiFiManager.h>      // https://github.com/tzapu/WiFiManager
 #include <SwitchEncoder.h>
 #include <peripherals.h>
-#include <Adafruit_NeoPixel.h>
 #include <Debug.h>
 
 // Async MQTT
@@ -16,12 +15,11 @@ TimerHandle_t wifiReconnectTimer;
 AsyncWebServer server(80);
 DNSServer dns;
 AsyncWiFiManager wifiManager(&server,&dns);
-
 // Rotary Encoder
 SwitchEncoder encoder = SwitchEncoder(Channel_A, Channel_B, Switch);
+// Neopixel
+Neopixelstick pixels = Neopixelstick();
 
-
-Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 void setup() 
 {
@@ -41,7 +39,7 @@ void setup()
   mqttClient.onMessage(onMqttMessage);
   mqttClient.onPublish(onMqttPublish);
 
-  pixels.begin();
+  pixels.setup();
 
   encoder.init();
   encoder.attachFunctionOnButtonPressedEdge(buttonPressed);
@@ -55,10 +53,7 @@ void setup()
 void loop() 
 {
   encoder.check();
-
-  pixels.clear();
-  pixels.setPixelColor(0, pixels.Color(0, 150, 0));
-  pixels.show(); 
+  pixels.check(millis());
 }
 
 
