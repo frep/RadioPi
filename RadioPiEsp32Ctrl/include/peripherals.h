@@ -4,6 +4,23 @@
 #include <Arduino.h>
 #include <Adafruit_NeoPixel.h>
 
+// Raspberry Pi states
+enum RpiState : uint8_t 
+{
+  rpiDown,
+  rpiStartup,
+  rpiUp,
+  rpiShutdown,   
+};
+
+/////////////////////////////////////////////////////////////////////////////////////
+// times in milliseconds
+/////////////////////////////////////////////////////////////////////////////////////
+
+#define longpress        1000      
+#define isAliveInterval  5000
+#define shutdownTime    30000
+
 /////////////////////////////////////////////////////////////////////////////////////
 // Hardware: feather pins
 /////////////////////////////////////////////////////////////////////////////////////
@@ -18,7 +35,15 @@
 #define NUMPIXELS  1    // later: 8
 
 // startpin (to switch the relay)
-#define PIN_POWER 32
+#define PIN_POWER 13    // later: 32
+
+/////////////////////////////////////////////////////////////////////////////////////
+// Raspberry Pi control functions
+/////////////////////////////////////////////////////////////////////////////////////
+void startup();
+void shutdown();
+void isRpiAlive();
+void isRpiDown();
 
 /////////////////////////////////////////////////////////////////////////////////////
 // Switch Encoder functions
@@ -36,24 +61,24 @@ void turnCounterclockwise();
 class Neopixelstick
 {
 public:
-	Neopixelstick();
-    ~Neopixelstick();
+  Neopixelstick(uint16_t anzahlPixel, uint16_t pinNummer);
+  ~Neopixelstick();
 
-    void setup();
-    void startFadeIn();
-    void check(unsigned long millis);
+  void setup();
+  void startFadeIn();
+  void check(unsigned long millis);
 		
 private:
-    unsigned long m_previousMillis;
-    unsigned long m_startLightOn;
-    unsigned long m_lightOnTime;
-    uint8_t m_brightness;
-    bool m_bfadeIn;
-    bool m_bfadeOut;
-    uint8_t m_numPixels;
-    Adafruit_NeoPixel* m_pPixels;
+  unsigned long m_previousMillis;
+  unsigned long m_startLightOn;
+  unsigned long m_lightOnTime;
+  uint8_t m_brightness;
+  bool m_bfadeIn;
+  bool m_bfadeOut;
+  uint8_t m_numPixels;
+  Adafruit_NeoPixel* m_pPixels;
 
-    void setBrightness(uint8_t brightness);
+  void setBrightness(uint8_t brightness);
 };
 
 #endif

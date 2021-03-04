@@ -5,11 +5,15 @@
 #include <wireless.h>
 #include <Debug.h>
 #include <MqttCredentials.h>
+#include <peripherals.h>
 
 extern AsyncWiFiManager wifiManager;
 extern AsyncMqttClient mqttClient;
 extern TimerHandle_t mqttReconnectTimer;
 extern TimerHandle_t wifiReconnectTimer;
+
+extern bool bPendingAliveRequest;
+extern RpiState state;
 
 void connectToWifi() 
 {
@@ -96,6 +100,18 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   DEBUG_P(index);
   DEBUG_T("  total: ");
   DEBUG_P(total);
+
+  if(!strcmp(topic, "alive"))
+  {
+    if(state == rpiStartup)
+    {
+      // startup has finished
+      state = rpiUp;
+    }
+    // a pending alive request was answered
+    bPendingAliveRequest = false;
+  }
+
 }
 
 void onMqttPublish(uint16_t packetId) 

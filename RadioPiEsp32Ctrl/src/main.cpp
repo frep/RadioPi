@@ -18,14 +18,24 @@ AsyncWiFiManager wifiManager(&server,&dns);
 // Rotary Encoder
 SwitchEncoder encoder = SwitchEncoder(Channel_A, Channel_B, Switch);
 // Neopixel
-Neopixelstick pixels = Neopixelstick();
+Neopixelstick pixels = Neopixelstick(NUMPIXELS, PIN_NEO);
+// RaspberryPi state
+RpiState state;
 
+bool bPendingAliveRequest;
+uint nUnansweredAliveRequests;
 
 void setup() 
 {
   DEBUG_B(115200);
   DEBUG_P();
   DEBUG_P();
+
+  state = rpiDown;
+  bPendingAliveRequest = false;
+  nUnansweredAliveRequests = 0;
+  pinMode(PIN_POWER, OUTPUT); 
+  digitalWrite(PIN_POWER, LOW);
 
   mqttReconnectTimer = xTimerCreate("mqttTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToMqtt));
   wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToWifi));
@@ -54,6 +64,22 @@ void loop()
 {
   encoder.check();
   pixels.check(millis());
+
+  switch(state)
+  {
+    case rpiDown:
+    default:
+      // nothing to do
+      break;
+    case rpiStartup:
+    case rpiUp:
+      // send periodically isAlive requests
+      isRpiAlive();
+      break;
+    case rpiShutdown:
+      isRpiDown();
+      break;
+  }
 }
 
 

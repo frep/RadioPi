@@ -7,35 +7,123 @@
 
 extern AsyncMqttClient mqttClient;
 extern Neopixelstick pixels;
+extern RpiState state;
+extern bool bPendingAliveRequest;
+extern uint nUnansweredAliveRequests;
+
+/////////////////////////////////////////////////////////////////////////////////////
+// Raspberry Pi control functions
+/////////////////////////////////////////////////////////////////////////////////////
+
+unsigned long lastAliveRequest;
+unsigned long startShutdown;
+
+void startup()
+{
+    DEBUG_P("startup");
+    // To start the raspberry pi, the power has to be turned on
+    digitalWrite(PIN_POWER, HIGH);
+
+    lastAliveRequest = millis();
+    state = rpiStartup;
+}
+
+void shutdown()
+{
+    DEBUG_P("shutdown");
+    // send a shutdown request to the raspberry pi
+    mqttClient.publish("volumio", 0, true, "isRpiAlive");
+    
+    startShutdown = millis();
+    state = rpiShutdown;
+}
+
+void isRpiAlive()
+{
+    // check periodically, if rpi is alive
+    unsigned long currentMillis = millis();
+    if((currentMillis - lastAliveRequest) > isAliveInterval)
+    {
+        // check if a pending alive request kept unanswered
+        if(bPendingAliveRequest)
+        {
+            nUnansweredAliveRequests++;
+        }
+        // send a new alive request
+        mqttClient.publish("volumio", 0, true, "isRpiAlive");
+        // Only if RPi state is rpiUp, an answer is expected
+        bPendingAliveRequest = (state == rpiUp) ? true : false;
+
+        lastAliveRequest = currentMillis;
+    }
+}
+
+void isRpiDown()
+{
+    // check if raspberry pi had enough time to shutdown gracefully
+    unsigned long currentMillis = millis();
+    if((currentMillis - startShutdown) > shutdownTime)
+    {
+        // Power off the raspberry pi
+        digitalWrite(PIN_POWER, LOW);
+
+        state = rpiDown;
+    }
+}
 
 /////////////////////////////////////////////////////////////////////////////////////
 // Switch Encoder functions
 /////////////////////////////////////////////////////////////////////////////////////
 
+unsigned long buttonPressStart;
+
 void buttonPressed()
 {
     DEBUG_P("Pressed");
-    mqttClient.publish("volumio", 0, true, "buttonPressed");
+    buttonPressStart = millis();
     pixels.startFadeIn();
 }
 
 void buttonReleased()
 {
     DEBUG_P("Released");
-    //mqttClient.publish("volumio", 0, true, "buttonReleased");
+    if((millis() - buttonPressStart) > longpress)
+    {
+        // long press
+        if(state == rpiDown)
+        {
+            startup();
+        }
+        else if((state == rpiStartup)||(state == rpiUp))
+        {
+            shutdown();
+        }
+    }
+    else
+    {
+        // short press
+        if(state == rpiDown)
+        {
+            startup();
+        }
+        else if(state == rpiUp)
+        {
+            mqttClient.publish("volumio", 0, true, "togglePlayPause");
+        }
+    }
 }
 
 void turnClockwise()
 {
     DEBUG_P("CW");
-    mqttClient.publish("volumio", 0, true, "turnCW");
+    mqttClient.publish("volumio", 0, true, "VolumeUp");
     pixels.startFadeIn();
 }
 
 void turnCounterclockwise()
 {
     DEBUG_P("CCW");
-    mqttClient.publish("volumio", 0, true, "turnCCW");
+    mqttClient.publish("volumio", 0, true, "VolumeDown");
     pixels.startFadeIn();
 }
 
@@ -44,7 +132,7 @@ void turnCounterclockwise()
 // class Neopixelstick
 /////////////////////////////////////////////////////////////////////////////////////
 
-Neopixelstick::Neopixelstick()
+Neopixelstick::Neopixelstick(uint16_t anzahlPixel, uint16_t pinNummer)
 {
     m_previousMillis = 0;
     m_startLightOn = 0;
@@ -52,8 +140,8 @@ Neopixelstick::Neopixelstick()
     m_brightness = 0;
     m_bfadeIn = false;
     m_bfadeOut = false;
-    m_numPixels = NUMPIXELS;
-    m_pPixels = new Adafruit_NeoPixel(NUMPIXELS, PIN_NEO, NEO_GRB + NEO_KHZ800);
+    m_numPixels = anzahlPixel;
+    m_pPixels = new Adafruit_NeoPixel(anzahlPixel, pinNummer, NEO_GRB + NEO_KHZ800);
 }
 
 Neopixelstick::~Neopixelstick()
