@@ -13,6 +13,7 @@ extern TimerHandle_t mqttReconnectTimer;
 extern TimerHandle_t wifiReconnectTimer;
 
 extern bool bPendingAliveRequest;
+extern uint nUnansweredAliveRequests;
 extern RpiState state;
 
 void connectToWifi() 
@@ -55,6 +56,9 @@ void onMqttConnect(bool sessionPresent)
   DEBUG_P("Connected to MQTT.");
   DEBUG_T("Session present: ");
   DEBUG_P(sessionPresent);
+
+  // Meldungen fuer den Esp32 abonnieren
+  mqttClient.subscribe("radioPiEsp32", 0);
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) 
@@ -101,15 +105,20 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   DEBUG_T("  total: ");
   DEBUG_P(total);
 
-  if(!strcmp(topic, "alive"))
+  if(!strcmp(topic, "radioPiEsp32"))
   {
-    if(state == rpiStartup)
-    {
-      // startup has finished
-      state = rpiUp;
-    }
-    // a pending alive request was answered
-    bPendingAliveRequest = false;
+      if(!strcmp(payload, "alive"))
+      {
+        DEBUG_P("radioPiEsp32: alive");
+        if(state == rpiStartup)
+        {
+          // startup has finished
+          state = rpiUp;
+        }
+        // a pending alive request was answered
+        bPendingAliveRequest = false;
+        nUnansweredAliveRequests = 0;
+      }
   }
 
 }

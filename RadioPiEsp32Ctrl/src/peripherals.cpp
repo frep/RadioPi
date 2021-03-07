@@ -32,7 +32,7 @@ void shutdown()
 {
     DEBUG_P("shutdown");
     // send a shutdown request to the raspberry pi
-    mqttClient.publish("volumio", 0, true, "isRpiAlive");
+    mqttClient.publish("volumio", 0, false, "shutdown");
     
     startShutdown = millis();
     state = rpiShutdown;
@@ -48,9 +48,13 @@ void isRpiAlive()
         if(bPendingAliveRequest)
         {
             nUnansweredAliveRequests++;
+            if(nUnansweredAliveRequests > 500)
+            {
+                shutdown();
+            }
         }
         // send a new alive request
-        mqttClient.publish("volumio", 0, true, "isRpiAlive");
+        mqttClient.publish("volumio", 0, false, "isRpiAlive");
         // Only if RPi state is rpiUp, an answer is expected
         bPendingAliveRequest = (state == rpiUp) ? true : false;
 
@@ -108,7 +112,7 @@ void buttonReleased()
         }
         else if(state == rpiUp)
         {
-            mqttClient.publish("volumio", 0, true, "togglePlayPause");
+            mqttClient.publish("volumio", 0, false, "togglePlayPause");
         }
     }
 }
@@ -116,14 +120,14 @@ void buttonReleased()
 void turnClockwise()
 {
     DEBUG_P("CW");
-    mqttClient.publish("volumio", 0, true, "VolumeUp");
+    mqttClient.publish("volumio", 0, false, "VolumeUp");
     pixels.startFadeIn();
 }
 
 void turnCounterclockwise()
 {
     DEBUG_P("CCW");
-    mqttClient.publish("volumio", 0, true, "VolumeDown");
+    mqttClient.publish("volumio", 0, false, "VolumeDown");
     pixels.startFadeIn();
 }
 
