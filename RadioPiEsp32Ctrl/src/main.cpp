@@ -64,22 +64,7 @@ void loop()
 {
   encoder.check();
   pixels.check(millis());
-
-  switch(state)
-  {
-    case rpiDown:
-    default:
-      // nothing to do
-      break;
-    case rpiStartup:
-    case rpiUp:
-      // send periodically isAlive requests
-      isRpiAlive();
-      break;
-    case rpiShutdown:
-      isRpiDown();
-      break;
-  }
+  handleState(state);
 }
 
 

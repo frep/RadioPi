@@ -75,6 +75,25 @@ void isRpiDown()
     }
 }
 
+void handleState(RpiState actualState)
+{
+    switch(actualState)
+    {
+        case rpiDown:
+        default:
+            // nothing to do
+        break;
+        case rpiStartup:
+        case rpiUp:
+            // send periodically isAlive requests
+            isRpiAlive();
+        break;
+        case rpiShutdown:
+            isRpiDown();
+        break;
+    }
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 // Switch Encoder functions
 /////////////////////////////////////////////////////////////////////////////////////
