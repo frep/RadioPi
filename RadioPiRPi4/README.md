@@ -59,7 +59,7 @@ To reload the changes of systemctl and to add the new service to the autostart, 
 
 To check, if the service works as expected, use these commands:
 
-> 		sudo systemctl start dummy.service
-> 		sudo systemctl status dummy.service
+> 		sudo systemctl start radioPi.service
+> 		sudo systemctl status radioPi.service
 
 The service should now be listed as active (running).
