@@ -1,12 +1,19 @@
 # RadioPi
 Repository for a raspberry pi based radio project. An overview of the system is shown in the following picture:
-![Systemuebersicht](pictures/Systemuebersicht.png)
+
+<p align="center">
+<img src=pictures/Systemuebersicht.png width=90%/>
+</p>
+
 The system is based on four main parts:
 
 1. **Raspberry Pi 4**: The internet radio is running on the raspberry pi 4 using the [volumio](https://volumio.org/) distribution. Aside from the distribuition, an mosquitto mqtt broker is launched at startup using systemctl. This is used to send an receive messages between the different mqtt clients. One of these clients is a python script, which runs also on the raspberry pi 4. This scipt is also launched as a service using systemctl and can control the music played from the volumio distribution. Used controls are increasing and decreasing of the volume, as well as play/pause the music. The code for the script, as well as the setup of the volumio-sd-card can be found [here](https://github.com/frep/RadioPi/tree/main/RadioPiRPi4)
 
 2. **AMP2**: The speaker of the radio is connected to the raspberry pi by using the amplifier board [amp2](https://www.hifiberry.com/shop/boards/hifiberry-amp2/) from the company hifiberry.com.
-![amp2](pictures/amp2.jpeg)
+
+<p align="center">
+<img src=pictures/amp2.jpeg width=60%/>
+</p>
 
 3. **HUZZAH32**: An [Adafruit HUZZAH32](https://www.adafruit.com/product/3405) feather board is used to read the rotary encoder events and generate mqtt messages, which are send over wifi to the mqtt broker, running on the raspberry pi. For this reason, an mqtt client is implemented on the esp32 sketch. A little neopixel stip, containing eight neopixel, are controlled by the microcontroller, to indicate that the encoder is turned or pressed. The power for the raspberry pi and the amp2 board is also controlled by the microcontroller. The code, running on the microcontroller can be found [here](https://github.com/frep/RadioPi/tree/main/RadioPiEsp32Ctrl)
 

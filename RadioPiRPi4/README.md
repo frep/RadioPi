@@ -5,9 +5,16 @@ The RadioPi project is based on the [volumio](https://volumio.org/) distribution
 Volumio setup
 -------------
 At the time of the setup, the actual image for the raspberry pi was **volumio-2.861-2020-12-22-pi.img**. After an inital setup, the following setting are needed, to support the used [Hifiberry](https://www.hifiberry.com/) Amp2 amplifier:
-![VolumioSettings1](pictures/VolumioSettings1.png)
-![VolumioSettings2](pictures/VolumioSettings2.png)
-![VolumioSettings3](pictures/VolumioSettings3.png)
+
+<p align="center">
+<img src=pictures/VolumioSettings1.png width=80%/>
+</p>
+<p align="center">
+<img src=pictures/VolumioSettings2.png width=80%/>
+</p>
+<p align="center">
+<img src=pictures/VolumioSettings3.png width=80%/>
+</p>
 
 - **Enable ssh**: http://volumio.local/dev/
 
