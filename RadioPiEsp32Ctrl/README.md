@@ -10,3 +10,13 @@ The pinout of the Huzzah32 feather board can be looked up [here](https://github.
 PlatformIO
 ----------
 The program for the Huzzah32 board was created with the [PlatformIO-IDE](https://platformio.org/) inside of the Visual Studio Code (VSCode).
+
+Setup
+-----
+After the first startup, the microcontroller doesn't know the wifi credentials. Here comes the **ESPAsyncWiFiManager** library into play. If the microcontroller can't connect to a known wifi, an access point (AP) is launched. Connect to the AP with the name **AutoConnectAP**. A menu as shown in the following picture pops up:
+
+<p align="center">
+<img src=pictures/AutoConnectAP.png width=80%/>
+</p>
+
+Under **Configure WiFi** the correct wifi can be chosen an the credentials can be entered. From now on, with correct credentials, the microcontroller can connect to the wifi and no AP is launched anymore.

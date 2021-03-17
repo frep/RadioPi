@@ -23,6 +23,7 @@ void startup()
     DEBUG_P("startup");
     // To start the raspberry pi, the power has to be turned on
     digitalWrite(PIN_POWER, HIGH);
+    digitalWrite(PIN_LED, HIGH);
 
     lastAliveRequest = millis();
     state = rpiStartup;
@@ -70,6 +71,7 @@ void isRpiDown()
     {
         // Power off the raspberry pi
         digitalWrite(PIN_POWER, LOW);
+        digitalWrite(PIN_LED, LOW);
 
         state = rpiDown;
     }

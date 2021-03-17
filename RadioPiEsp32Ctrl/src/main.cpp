@@ -34,8 +34,10 @@ void setup()
   state = rpiDown;
   bPendingAliveRequest = false;
   nUnansweredAliveRequests = 0;
-  pinMode(PIN_POWER, OUTPUT); 
+  pinMode(PIN_POWER, OUTPUT);
+  pinMode(PIN_LED, OUTPUT);
   digitalWrite(PIN_POWER, LOW);
+  digitalWrite(PIN_LED, LOW);
 
   mqttReconnectTimer = xTimerCreate("mqttTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToMqtt));
   wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToWifi));

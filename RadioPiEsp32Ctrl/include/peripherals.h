@@ -32,10 +32,11 @@ enum RpiState : uint8_t
 
 // Neopixel
 #define PIN_NEO   14
-#define NUMPIXELS  1    // later: 8
+#define NUMPIXELS  8
 
 // startpin (to switch the relay)
-#define PIN_POWER 13    // later: 32
+#define PIN_POWER 32
+#define PIN_LED   13  // the onboard-LED indicates, if relay is ON
 
 /////////////////////////////////////////////////////////////////////////////////////
 // Raspberry Pi control functions
