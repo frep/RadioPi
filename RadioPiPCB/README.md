@@ -1,14 +1,23 @@
 RadioPi PCB
 ===========
-The RadioPi PCB (v2) connects the MCU board [Adafruit HUZZAH32](https://www.adafruit.com/product/3405) as well as the RotaryEncoder and the Neopixels with the Raspberry Pi (including the Hifiberry Amp2 addon). The power is also controlled by the MCU.
+<p align="center">
+<img src=pictures/radioPiPcb.jpeg width=80%/>
+</p>
+
+The RadioPi PCB (v2) connects the MCU board [Adafruit HUZZAH32](https://www.adafruit.com/product/3405) as well as the RotaryEncoder and the Neopixels with the Raspberry Pi (including the Hifiberry Amp2 addon). The power is also controlled by the MCU, using an OMRON relay. With mounted esp32 board, the part looks like this:
+
 
 <p align="center">
-<img src=pictures/RadioPi.png width=80%/>
+<img src=pictures/radioPiPcbWithEsp32.jpeg width=80%/>
 </p>
 
 Circuit maker
 -------------
 The PCB is designed with the Circuit maker program. The files can found [here](https://circuitmaker.com/Projects/Details/PASCAL-FREHNER/RadioPi2).
+
+<p align="center">
+<img src=pictures/RadioPi.png width=80%/>
+</p>
 
 Gerber settings
 ---------------
