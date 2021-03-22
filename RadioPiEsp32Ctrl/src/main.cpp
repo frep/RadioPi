@@ -24,6 +24,7 @@ RpiState state;
 
 bool bPendingAliveRequest;
 uint nUnansweredAliveRequests;
+bool bWebserverStarted;
 
 void setup() 
 {
@@ -34,6 +35,7 @@ void setup()
   state = rpiDown;
   bPendingAliveRequest = false;
   nUnansweredAliveRequests = 0;
+  bWebserverStarted = false;
   pinMode(PIN_POWER, OUTPUT);
   pinMode(PIN_LED, OUTPUT);
   digitalWrite(PIN_POWER, LOW);
@@ -67,6 +69,7 @@ void loop()
   encoder.check();
   pixels.check(millis());
   handleState(state);
+  handleWebserver();
 }
 
 

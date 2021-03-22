@@ -6,6 +6,8 @@
 
 void connectToWifi();
 void connectToMqtt();
+void startWebserver();
+void handleWebserver();
 void WiFiEvent(WiFiEvent_t event);
 void onMqttConnect(bool sessionPresent);
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason);

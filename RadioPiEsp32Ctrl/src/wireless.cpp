@@ -2,11 +2,15 @@
 #include <AsyncMqttClient.h>
 #include <ESPAsyncWebServer.h>
 #include <ESPAsyncWiFiManager.h> 
+#include <AsyncElegantOTA.h>
+#include <ESPmDNS.h>
 #include <wireless.h>
 #include <Debug.h>
 #include <MqttCredentials.h>
 #include <peripherals.h>
 
+extern AsyncWebServer server;
+extern bool bWebserverStarted;
 extern AsyncWiFiManager wifiManager;
 extern AsyncMqttClient mqttClient;
 extern TimerHandle_t mqttReconnectTimer;
@@ -29,6 +33,33 @@ void connectToMqtt()
   mqttClient.connect();
 }
 
+void startWebserver()
+{
+  DEBUG_P("start webserver");
+
+  if(!MDNS.begin("esp32")) 
+  {
+    DEBUG_P("Error starting mDNS");
+    return;
+  }
+
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", "Hi! I am radioPiEsp32.");
+  });
+
+  AsyncElegantOTA.begin(&server);    // Start ElegantOTA
+  server.begin();
+  bWebserverStarted = true;
+}
+
+void handleWebserver()
+{
+  if(bWebserverStarted)
+  {
+    AsyncElegantOTA.loop();
+  }
+}
+
 void WiFiEvent(WiFiEvent_t event) 
 {
     DEBUG_F("[WiFi-event] event: %d\n", event);
@@ -38,6 +69,7 @@ void WiFiEvent(WiFiEvent_t event)
         DEBUG_P("WiFi connected");
         DEBUG_P("IP address: ");
         DEBUG_P(WiFi.localIP());
+        startWebserver();
         connectToMqtt();
         break;
       case SYSTEM_EVENT_STA_DISCONNECTED:

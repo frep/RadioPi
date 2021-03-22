@@ -20,3 +20,12 @@ After the first startup, the microcontroller doesn't know the wifi credentials. 
 </p>
 
 Under **Configure WiFi** the correct wifi can be chosen an the credentials can be entered. From now on, with correct credentials, the microcontroller can connect to the wifi and no AP is launched anymore.
+
+OTA
+---
+Updating the microcontroller can be a little bit tricky, since it is built into the radio. Luckly, for the esp32 there is the possibility of OTA (Over-The-Air) programming. After the esp32 has succesfully connected to the wifi, a webserver is started with the OTA functionality. The update server can be reached with the following url:
+>     http://esp32.local/update
+
+After compiling in the platformIO IDE, the **firmware.bin** file, which has to be uploaded, can be found at the following location (for the MAC enviroment featheresp32-OSX):
+>     .pio/build/featheresp32-OSX/firmware.bin
+If the hidden directory **.pio** is not shown unter under the macOS, this can be changed with the press **Command + Shift + . (full stop/period)**. 
