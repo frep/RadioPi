@@ -1,8 +1,6 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#define DEBUGGING
-
 #ifdef DEBUGGING
 #define DEBUG_B(...) Serial.begin(__VA_ARGS__)
 #define DEBUG_P(...) Serial.println(__VA_ARGS__)
