@@ -231,7 +231,7 @@ void Neopixelstick::setBrightness(uint8_t brightness)
     for(int i=0; i<m_numPixels; i++)
     {
       // pixels.Color takes RGB values, from 0,0,0 up to 255,255,255
-      m_pPixels->setPixelColor(i, m_pPixels->Color(brightness,brightness,brightness));
-      m_pPixels->show(); // This sends the updated pixel color to the hardware.
+      m_pPixels->setPixelColor(i, m_pPixels->Color(brightness,brightness,brightness));    
     } 
+    m_pPixels->show(); // This sends the updated pixel color to the hardware.
 }
