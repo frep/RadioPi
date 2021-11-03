@@ -4,12 +4,45 @@
 #include <AsyncMqttClient.h>
 #include <Adafruit_NeoPixel.h>
 #include <Debug.h>
+#include <SwitchEncoder.h>
 
 extern AsyncMqttClient mqttClient;
-extern Neopixelstick pixels;
-extern RpiState state;
-extern bool bPendingAliveRequest;
-extern uint nUnansweredAliveRequests;
+
+// Rotary Encoder
+SwitchEncoder encoder = SwitchEncoder(Channel_A, Channel_B, Switch);
+// Neopixel
+Neopixelstick pixels = Neopixelstick(NUMPIXELS, PIN_NEO);
+// RaspberryPi state
+RpiState state;
+
+bool bPendingAliveRequest;
+uint nUnansweredAliveRequests;
+
+void initPeripherals()
+{
+  state = rpiDown;
+  bPendingAliveRequest = false;
+  nUnansweredAliveRequests = 0;
+  pinMode(PIN_POWER, OUTPUT);
+  pinMode(PIN_LED, OUTPUT);
+  digitalWrite(PIN_POWER, LOW);
+  digitalWrite(PIN_LED, LOW);
+
+  pixels.setup();
+
+  encoder.init();
+  encoder.attachFunctionOnButtonPressedEdge(buttonPressed);
+  encoder.attachFunctionOnButtonReleasedEdge(buttonReleased);
+  encoder.attachFunctionOnClockwiseTurn(turnClockwise);
+  encoder.attachFunctionOnCounterClockwiseTurn(turnCounterclockwise);
+}
+
+void loopPeripherals()
+{
+  encoder.check();
+  pixels.check(millis());
+  handleState(state);
+}
 
 /////////////////////////////////////////////////////////////////////////////////////
 // Raspberry Pi control functions

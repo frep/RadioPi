@@ -4,6 +4,7 @@
 #include <AsyncMqttClient.h>
 #include <ESPAsyncWebServer.h>
 
+void initWireless();
 void connectToWifi();
 void connectToMqtt();
 void startWebserver();

@@ -9,16 +9,37 @@
 #include <MqttCredentials.h>
 #include <peripherals.h>
 
-extern AsyncWebServer server;
-extern bool bWebserverStarted;
-extern AsyncWiFiManager wifiManager;
-extern AsyncMqttClient mqttClient;
-extern TimerHandle_t mqttReconnectTimer;
-extern TimerHandle_t wifiReconnectTimer;
+// Async MQTT
+AsyncMqttClient mqttClient;
+TimerHandle_t mqttReconnectTimer;
+TimerHandle_t wifiReconnectTimer;
+// WifiManager
+AsyncWebServer server(80);
+DNSServer dns;
+AsyncWiFiManager wifiManager(&server,&dns);
+
+bool bWebserverStarted;
 
 extern bool bPendingAliveRequest;
 extern uint nUnansweredAliveRequests;
 extern RpiState state;
+
+void initWireless()
+{
+  mqttReconnectTimer = xTimerCreate("mqttTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToMqtt));
+  wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToWifi));
+
+  WiFi.onEvent(WiFiEvent);
+
+  mqttClient.onConnect(onMqttConnect);
+  mqttClient.onDisconnect(onMqttDisconnect);
+  mqttClient.onSubscribe(onMqttSubscribe);
+  mqttClient.onUnsubscribe(onMqttUnsubscribe);
+  mqttClient.onMessage(onMqttMessage);
+  mqttClient.onPublish(onMqttPublish);
+
+  connectToWifi();
+}
 
 void connectToWifi() 
 {
@@ -86,8 +107,7 @@ void WiFiEvent(WiFiEvent_t event)
 void onMqttConnect(bool sessionPresent) 
 {
   DEBUG_P("Connected to MQTT.");
-  DEBUG_T("Session present: ");
-  DEBUG_P(sessionPresent);
+  DEBUG_T("Session present: "); DEBUG_P(sessionPresent);
 
   // Meldungen fuer den Esp32 abonnieren
   mqttClient.subscribe("radioPiEsp32", 0);
@@ -106,36 +126,26 @@ void onMqttDisconnect(AsyncMqttClientDisconnectReason reason)
 void onMqttSubscribe(uint16_t packetId, uint8_t qos) 
 {
   DEBUG_P("Subscribe acknowledged.");
-  DEBUG_T("  packetId: ");
-  DEBUG_P(packetId);
-  DEBUG_T("  qos: ");
-  DEBUG_P(qos);
+  DEBUG_T("  packetId: "); DEBUG_P(packetId);
+  DEBUG_T("  qos: "); DEBUG_P(qos);
 }
 
 void onMqttUnsubscribe(uint16_t packetId) 
 {
   DEBUG_P("Unsubscribe acknowledged.");
-  DEBUG_T("  packetId: ");
-  DEBUG_P(packetId);
+  DEBUG_T("  packetId: "); DEBUG_P(packetId);
 }
 
 void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) 
 {
   DEBUG_P("Publish received.");
-  DEBUG_T("  topic: ");
-  DEBUG_P(topic);
-  DEBUG_T("  qos: ");
-  DEBUG_P(properties.qos);
-  DEBUG_T("  dup: ");
-  DEBUG_P(properties.dup);
-  DEBUG_T("  retain: ");
-  DEBUG_P(properties.retain);
-  DEBUG_T("  len: ");
-  DEBUG_P(len);
-  DEBUG_T("  index: ");
-  DEBUG_P(index);
-  DEBUG_T("  total: ");
-  DEBUG_P(total);
+  DEBUG_T("  topic: "); DEBUG_P(topic);
+  DEBUG_T("  qos: "); DEBUG_P(properties.qos);
+  DEBUG_T("  dup: "); DEBUG_P(properties.dup);
+  DEBUG_T("  retain: "); DEBUG_P(properties.retain);
+  DEBUG_T("  len: "); DEBUG_P(len);
+  DEBUG_T("  index: "); DEBUG_P(index);
+  DEBUG_T("  total: "); DEBUG_P(total);
 
   if(!strcmp(topic, "radioPiEsp32"))
   {
@@ -158,6 +168,5 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
 void onMqttPublish(uint16_t packetId) 
 {
   DEBUG_P("Publish acknowledged.");
-  DEBUG_T("  packetId: ");
-  DEBUG_P(packetId);
+  DEBUG_T("  packetId: "); DEBUG_P(packetId);
 }
